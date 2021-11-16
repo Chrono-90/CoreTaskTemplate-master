@@ -1,17 +1,15 @@
 package jm.task.core.jdbc.dao;
-
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
-
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJDBCImpl extends Util implements UserDao {
     public UserDaoJDBCImpl() {
-
     }
 
     public void createUsersTable() {
@@ -42,6 +40,7 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
         String dr = "drop table if exists table_user";
         try {
             ave = getConnect().createStatement();
+            ave.execute(dr);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -51,29 +50,46 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
         PreparedStatement pg;
         String sv = "insert into table_user (name, lastname, age)values(?, ?, ?)";
         try {
+            getConnect().setAutoCommit(false);
             pg = getConnect().prepareStatement(sv);
             pg.setString(1,name);
             pg.setString(2,lastName);
             pg.setByte(3, age);
             pg.execute();
+            getConnect().commit();
             System.out.println("User с именем – " + name + " добавлен в базу данных");
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+        finally {
+            try {
+                getConnect().rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void removeUserById(long id) {
         PreparedStatement gg;
         String ss = "delete from table_user where id = ?";
         try {
+            getConnect().setAutoCommit(false);
             gg = getConnect().prepareStatement(ss);
             gg.setLong(1, id);
             gg.execute();
+            getConnect().commit();
         } catch (SQLException e) {
+
             e.printStackTrace();
         }
-
+        finally {
+            try {
+                getConnect().rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public List<User> getAllUsers() {
@@ -81,7 +97,7 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
         Statement ave;
         try {
             ave = getConnect().createStatement();
-            ResultSet sqa = ave.executeQuery("select * from table_user");
+            ResultSet sqa = ave.executeQuery("select name, lastname, age from table_user");
             while (sqa.next()) {
                 String name = sqa.getString(1);
                 String lastname = sqa.getString(2);
@@ -106,5 +122,5 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
+   }
 }
