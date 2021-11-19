@@ -27,29 +27,67 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
+        try {
         Util.getSession().beginTransaction();
         Util.getSession().save(new User(name, lastName, age));
         Util.getSession().getTransaction().commit();
+    } catch (Exception e) {
+            if (Util.getSession() != null) {
+                Util.getSession().getTransaction().rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            Util.getSession().close();
+        }
     }
 
     @Override
     public void removeUserById(long id) {
-        Util.getSession().beginTransaction();
-        Util.getSession().delete(Util.getSession().get(User.class, id));
-        Util.getSession().getTransaction().commit();
+        try {
+            Util.getSession().beginTransaction();
+            Util.getSession().delete(Util.getSession().get(User.class, id));
+            Util.getSession().getTransaction().commit();
+        } catch (Exception e) {
+            if (Util.getSession() != null) {
+                Util.getSession().getTransaction().rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            Util.getSession().close();
+        }
     }
-
     @Override
     public List<User> getAllUsers() {
-        Util.getSession().beginTransaction();
-        List<User> spisok = Util.getSession().createQuery("from User").getResultList();
-        Util.getSession().getTransaction().commit();
+        List<User> spisok = null;
+        try {
+            Util.getSession().beginTransaction();
+            spisok = Util.getSession().createQuery("from User").getResultList();
+            Util.getSession().getTransaction().commit();
+
+        } catch (Exception e) {
+            if (Util.getSession() != null) {
+                Util.getSession().getTransaction().rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            Util.getSession().close();
+        }
         return spisok;
     }
     @Override
     public void cleanUsersTable() {
+        try {
         Util.getSession().beginTransaction();
         Util.getSession().createQuery("delete from User").executeUpdate();
         Util.getSession().getTransaction().commit();
+        } catch (Exception e) {
+            if (Util.getSession() != null) {
+                Util.getSession().getTransaction().rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            Util.getSession().close();
+        }
+
     }
 }

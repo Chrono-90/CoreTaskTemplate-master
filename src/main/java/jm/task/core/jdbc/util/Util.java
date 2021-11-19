@@ -29,14 +29,14 @@ public class Util {
 
                 Configuration config = new Configuration();
                 Properties set = new Properties();
-                set.setProperty("Hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-                set.setProperty("Hibernate.connection.url", HOST);
-                set.setProperty("Hibernate.connection.user", USERNAME);
-                set.setProperty("Hibernate.connection.pass", PASS);
-                set.setProperty("Hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
-                set.setProperty("Hibernate.show_sql", "true");
-                set.setProperty("Hibernate.current_session_context_class", "thread");
-                set.setProperty("Hibernate.hbm2ddl_auto", "update");
+                set.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
+                set.setProperty("hibernate.connection.url", HOST);
+                set.setProperty("hibernate.connection.username", USERNAME);
+                set.setProperty("hibernate.connection.password", PASS);
+                set.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+                set.setProperty("hibernate.show_sql", "true");
+                set.setProperty("hibernate.current_session_context_class", "thread");
+                set.setProperty("hibernate.hbm2ddl_auto", "update");
                 config.setProperties(set);
                 config.addAnnotatedClass(User.class);
                 ServiceRegistry serv = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
