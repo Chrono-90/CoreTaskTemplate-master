@@ -93,11 +93,13 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
     }
 
     public List<User> getAllUsers() {
-        List <User> spisok = new ArrayList<>();
+        List<User> spisok = new ArrayList<>();
         Statement ave;
         try {
+            getConnect().setAutoCommit(false);
             ave = getConnect().createStatement();
             ResultSet sqa = ave.executeQuery("select name, lastname, age from table_user");
+            getConnect().commit();
             while (sqa.next()) {
                 String name = sqa.getString(1);
                 String lastname = sqa.getString(2);
@@ -107,12 +109,18 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
 
             }
             System.out.println(spisok);
+
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                getConnect().rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-            return spisok;
+        return spisok;
     }
-
     public void cleanUsersTable() {
         Statement ave;
         String clean = "truncate table table_user";
